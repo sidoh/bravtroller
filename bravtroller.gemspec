@@ -12,6 +12,8 @@ Gem::Specification.new do |gem|
   gem.email    = 'chris@sidoh.org'
   gem.homepage = 'http://github.com/sidoh/bravtroller'
 
+  gem.add_dependency('easy_upnp')
+
   gem.add_development_dependency('rspec', [">= 3.0.0"])
   gem.add_development_dependency('rake')
 
