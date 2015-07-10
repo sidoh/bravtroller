@@ -36,6 +36,9 @@ My TV requires that a device authenticate with it before controlling it remotely
 #### Example 
 
 ```ruby
+require 'bravtroller/client'
+require 'bravtroller/authenticator'
+
 auth = Bravtroller::Authenticator.new( Bravtroller::Client.new(BRAVIA_IP_ADDRESS) )
 
 a.authorized?
@@ -55,6 +58,7 @@ a.authorized?
 The below example assumes Bravtroller has already been authenticated:
 
 ```ruby
+require 'bravtroller/client'
 require 'bravtroller/remote'
 
 remote = Bravtroller::Remote.create(Bravtroller::Client.new(BRAVIA_IP_ADDRESS))
