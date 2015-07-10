@@ -25,8 +25,8 @@ devices supported roughly the same interface.
 
 #### Summary
 
-My TV requires that one authenticates with it. You can use `Bravtroller::Authenticator` to do that. This is what 
-happens:
+My TV requires that a device authenticate with it before controlling it remotely. You can use
+`Bravtroller::Authenticator` to do that. This is what happens:
 
 1. `Bravtroller::Authenticator` initiates an authentication request
 2. The TV displays a 4 digit security code
@@ -45,6 +45,9 @@ a.authorized?
 a.authorize { gets.strip }
 # > 3
 # => "auth=xxxxxxx"
+
+a.authorized?
+# => true
 ```
 
 ## Example usage
