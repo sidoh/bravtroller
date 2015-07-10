@@ -1,6 +1,7 @@
 require 'easy_upnp/ssdp_searcher'
 
 require_relative 'authenticator'
+require_relative 'client'
 
 module Bravtroller
   class Remote
