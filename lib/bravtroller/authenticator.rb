@@ -24,24 +24,24 @@ module Bravtroller
             version: '1.0'
         }
 
-    def initialize(bravia_address)
-      @bravia_address = bravia_address
+    def initialize(bravia_client)
+      @bravia_client = bravia_client
     end
 
     def authorized?
-      response = post_request('/sony/accessControl', AUTH_REQUEST_PARAMS)
+      response = @bravia_client.post_request('/sony/accessControl', AUTH_REQUEST_PARAMS)
       '200' == response.code
     end
 
     def authorize(&callback)
-      response = post_request('/sony/accessControl', AUTH_REQUEST_PARAMS)
+      response = @bravia_client.post_request('/sony/accessControl', AUTH_REQUEST_PARAMS)
 
       if response.code == '401'
         challenge_value = callback.call(response)
         auth_value = "Basic #{Base64.encode64(":#{challenge_value}")}"
         headers = { 'Authorization' => auth_value }
 
-        auth_response = post_request('/sony/accessControl', AUTH_REQUEST_PARAMS, headers)
+        auth_response = @bravia_client.post_request('/sony/accessControl', AUTH_REQUEST_PARAMS, headers)
 
         extract_cookie(auth_response)
       else
@@ -54,15 +54,6 @@ module Bravtroller
 
     def extract_cookie(response)
       response['Set-Cookie'].split(';').first
-    end
-
-    def post_request(path, params = {}, headers = {})
-      json = JSON.generate(params)
-      uri = URI("http://#{@bravia_address}#{path}")
-
-      Net::HTTP.start(uri.host, uri.port) do |http|
-        return http.post(path, json, headers)
-      end
     end
   end
 end
