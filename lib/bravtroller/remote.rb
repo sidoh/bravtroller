@@ -4,7 +4,37 @@ require_relative 'authenticator'
 
 module Bravtroller
   class Remote
-    def initialize(ircc_client)
+    IRCC_URN = 'urn:schemas-sony-com:service:IRCC:1'
+
+    LIST_METHODS_PARAMS = {
+        method: 'getRemoteControllerInfo',
+        params: [],
+        id: 10,
+        version: '1.0'
+    }
+
+    def self.create(bravia_client)
+      searcher = EasyUpnp::SsdpSearcher.new
+      results = searcher.search(IRCC_URN)
+      authenticator = Bravtroller::Authenticator.new(bravia_client)
+
+      if ! authenticator.authorized?
+        raise RuntimeError.new 'Not authorized yet. Please authorize Bravtroller using Bravtroller::Authenticator.'
+      end
+
+      if results.empty?
+        raise RuntimeError.new "Couldn't find any UPnP devices on the network that looks like a supported Sony device"
+      elsif results.count != 1
+        raise RuntimeError.new "Found more than one supported Sony device. Please construct Remote manually. Found devices: #{results.inspect}"
+      else
+        device = results.first
+        ircc_client = device.service(IRCC_URN, cookies: HTTPI::Cookie.new(authenticator.authorize {}))
+
+        Remote.new(ircc_client, bravia_client)
+      end
+    end
+
+    def initialize(ircc_client, bravia_client)
       @ircc_client = ircc_client
       @bravia_client = bravia_client
     end
