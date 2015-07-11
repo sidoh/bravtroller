@@ -40,6 +40,16 @@ module Bravtroller
       @bravia_client = bravia_client
     end
 
+    def power_on
+      addr = ['<broadcast>', 9]
+      sock = UDPSocket.new
+      sock.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
+      packet_data = (([255] * 6) + (@bravia_client.hw_addr.split(':').map(&:hex) * 16)).pack('C*')
+      sock.send(packet_data, 0, addr[0], addr[1])
+
+      true
+    end
+
     def press_button(button_key)
       raise RuntimeError.new "Undefined buton: #{button_key}" if ircc_codes[button_key].nil?
 
