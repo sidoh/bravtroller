@@ -51,7 +51,7 @@ module Bravtroller
     end
 
     def press_button(button_key)
-      raise RuntimeError.new "Undefined buton: #{button_key}" if ircc_codes[button_key].nil?
+      raise RuntimeError.new "Undefined button: #{button_key}" if ircc_codes[button_key].nil?
 
       @ircc_client.X_SendIRCC IRCCCode: ircc_codes[button_key]
     end
