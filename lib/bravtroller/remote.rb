@@ -1,3 +1,4 @@
+require 'singleton'
 require 'easy_upnp/ssdp_searcher'
 
 require_relative 'authenticator'
@@ -14,30 +15,38 @@ module Bravtroller
         version: '1.0'
     }
 
-    def self.create(bravia_client)
-      searcher = EasyUpnp::SsdpSearcher.new
-      results = searcher.search(IRCC_URN)
-      authenticator = Bravtroller::Authenticator.new(bravia_client)
-
-      if ! authenticator.authorized?
-        raise RuntimeError.new 'Not authorized yet. Please authorize Bravtroller using Bravtroller::Authenticator.'
+    class IrccClientFactory
+      def initialize(client)
+        @client = client
       end
 
-      if results.empty?
-        raise RuntimeError.new "Couldn't find any UPnP devices on the network that looks like a supported Sony device"
-      elsif results.count != 1
-        raise RuntimeError.new "Found more than one supported Sony device. Please construct Remote manually. Found devices: #{results.inspect}"
-      else
-        device = results.first
-        ircc_client = device.service(IRCC_URN, cookies: HTTPI::Cookie.new(authenticator.authorize {}))
+      def create
+        if @ircc_client.nil?
+          searcher = EasyUpnp::SsdpSearcher.new
+          results = searcher.search(IRCC_URN)
+          authenticator = Bravtroller::Authenticator.new(@client)
 
-        Remote.new(ircc_client, bravia_client)
+          if !authenticator.authorized?
+            raise RuntimeError.new 'Not authorized yet. Please authorize Bravtroller using Bravtroller::Authenticator.'
+          end
+
+          if results.empty?
+            raise RuntimeError.new "Couldn't find any UPnP devices on the network that looks like a supported Sony device"
+          elsif results.count != 1
+            raise RuntimeError.new "Found more than one supported Sony device. Please construct Remote manually. Found devices: #{results.inspect}"
+          else
+            device = results.first
+            @ircc_client = device.service(IRCC_URN, cookies: HTTPI::Cookie.new(authenticator.authorize {}))
+          end
+        end
+
+        @ircc_client
       end
     end
 
-    def initialize(ircc_client, bravia_client)
-      @ircc_client = ircc_client
+    def initialize(bravia_client, ircc_client_factory = IrccClientFactory.new(bravia_client))
       @bravia_client = bravia_client
+      @ircc_client_factory  = ircc_client_factory
     end
 
     def power_on
@@ -53,7 +62,7 @@ module Bravtroller
     def press_button(button_key)
       raise RuntimeError.new "Undefined button: #{button_key}" if ircc_codes[button_key].nil?
 
-      @ircc_client.X_SendIRCC IRCCCode: ircc_codes[button_key]
+      @ircc_client_factory.create.X_SendIRCC IRCCCode: ircc_codes[button_key]
     end
 
     def buttons
