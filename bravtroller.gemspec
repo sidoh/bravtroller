@@ -7,15 +7,16 @@ Gem::Specification.new do |gem|
   gem.version = Bravtroller::VERSION
 
   gem.summary = "Controller for the Bravia KDL-50W700B"
+  gem.description = "Controller for the Bravia KDL-50W700B supporting WOL and IRCC (Remote Control emulation). Likely supports other Sony devivces that expose the same services"
 
   gem.authors  = ['Christopher Mullins']
   gem.email    = 'chris@sidoh.org'
   gem.homepage = 'http://github.com/sidoh/bravtroller'
+  gem.license = 'MIT'
 
-  gem.add_dependency('easy_upnp')
+  gem.add_dependency('easy_upnp', '~> 0.1.6')
 
-  gem.add_development_dependency('rspec', [">= 3.0.0"])
-  gem.add_development_dependency('rake')
+  gem.add_development_dependency('rake', '~> 10.4')
 
   ignores  = File.readlines(".gitignore").grep(/\S+/).map(&:chomp)
   dotfiles = %w[.gitignore]
