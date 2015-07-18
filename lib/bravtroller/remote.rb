@@ -49,11 +49,18 @@ module Bravtroller
       @ircc_client_factory  = ircc_client_factory
     end
 
-    def power_on
+    def power_on(hw_addr = nil)
+      hw_addr = @bravia_client.hw_addr if hw_addr.nil?
+
+      if hw_addr.nil?
+        raise RuntimeError.new "Couldn't determine hw_addr for TV host from ARP. " <<
+          'Specify it manually in the call to power_on.'
+      end
+
       addr = ['<broadcast>', 9]
       sock = UDPSocket.new
       sock.setsockopt(Socket::SOL_SOCKET, Socket::SO_BROADCAST, true)
-      packet_data = (([255] * 6) + (@bravia_client.hw_addr.split(':').map(&:hex) * 16)).pack('C*')
+      packet_data = (([255] * 6) + (hw_addr.split(':').map(&:hex) * 16)).pack('C*')
       sock.send(packet_data, 0, addr[0], addr[1])
 
       true
