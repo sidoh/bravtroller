@@ -33,11 +33,11 @@ module Bravtroller
       '200' == response.code
     end
 
-    def authorize(&callback)
+    def authorize(auth_code = nil?, &callback)
       response = @bravia_client.post_request('/sony/accessControl', AUTH_REQUEST_PARAMS)
 
       if response.code == '401'
-        challenge_value = callback.call(response)
+        challenge_value = auth_code || callback.call(response)
         auth_value = "Basic #{Base64.encode64(":#{challenge_value}")}"
         headers = { 'Authorization' => auth_value }
 
