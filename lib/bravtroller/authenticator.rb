@@ -3,6 +3,8 @@ require 'json'
 require 'base64'
 
 module Bravtroller
+  class AuthorizationError < StandardError; end
+
   class Authenticator
     CLIENT_ID = 'bravtroller:de7cd7d5-a9a0-44a1-aba1-57d973a0ee8a'
 
@@ -42,6 +44,8 @@ module Bravtroller
         headers = { 'Authorization' => auth_value }
 
         auth_response = @bravia_client.post_request('/sony/accessControl', AUTH_REQUEST_PARAMS, headers)
+
+        raise AuthorizationError, 'Authentication failed' if auth_response.code == '401'
 
         extract_cookie(auth_response)
       else
