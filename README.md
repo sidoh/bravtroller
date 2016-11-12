@@ -60,7 +60,7 @@ The below example assumes Bravtroller has already been authenticated:
 require 'bravtroller/client'
 require 'bravtroller/remote'
 
-remote = Bravtroller::Remote.create( Bravtroller::Client.new(BRAVIA_IP_ADDRESS) )
+remote = Bravtroller::Remote.new( Bravtroller::Client.new(BRAVIA_IP_ADDRESS) )
 
 remote.buttons
 # => ["PowerOff", "Input", "GGuide", "EPG", "Favorites", "Display", "Home", "Options", "Return", "Up", "Down", "Right", "Left", "Confirm", "Red", "Green", "Yellow", "Blue", "Num1", "Num2", "Num3", "Num4", "Num5", "Num6", "Num7", "Num8", "Num9", "Num0", "Num11", "Num12", "VolumeUp", "VolumeDown", "Mute", "ChannelUp", "ChannelDown", "SubTitle", "ClosedCaption", "Enter", "DOT", "Analog", "Teletext", "Exit", "Analog2", "*AD", "Digital", "Analog?", "BS", "CS", "BSCS", "Ddata", "PicOff", "Tv_Radio", "Theater", "SEN", "InternetWidgets", "InternetVideo", "Netflix", "SceneSelect", "Mode3D", "iManual", "Audio", "Wide", "Jump", "PAP", "MyEPG", "ProgramDescription", "WriteChapter", "TrackID", "TenKey", "AppliCast", "acTVila", "DeleteVideo", "PhotoFrame", "TvPause", "KeyPad", "Media", "SyncMenu", "Forward", "Play", "Rewind", "Prev", "Stop", "Next", "Rec", "Pause", "Eject", "FlashPlus", "FlashMinus", "TopMenu", "PopUpMenu", "RakurakuStart", "OneTouchTimeRec", "OneTouchView", "OneTouchRec", "OneTouchStop", "DUX", "FootballMode", "Social"]
