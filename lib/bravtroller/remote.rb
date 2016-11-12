@@ -16,8 +16,8 @@ module Bravtroller
     }
 
     class IrccClientFactory
-      def initialize(client)
-        @client = client
+      def initialize(host)
+        @client = Bravtroller::Client.new(host)
       end
 
       def create
@@ -44,8 +44,8 @@ module Bravtroller
       end
     end
 
-    def initialize(bravia_client, ircc_client_factory = IrccClientFactory.new(bravia_client))
-      @bravia_client = bravia_client
+    def initialize(host, ircc_client_factory = IrccClientFactory.new(host))
+      @bravia_client = Bravtroller::Client.new(host)
       @ircc_client_factory  = ircc_client_factory
     end
 

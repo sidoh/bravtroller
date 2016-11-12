@@ -26,8 +26,14 @@ module Bravtroller
             version: '1.0'
         }
 
-    def initialize(bravia_client)
-      @bravia_client = bravia_client
+    def initialize(host)
+      if host.is_a?(String)
+        @bravia_client = Bravtroller::Client.new(host)
+      elsif host.is_a?(Bravtroller::Client)
+        @bravia_client = host
+      else
+        raise "Unsupported type for host: #{host.class}"
+      end
     end
 
     def authorized?
