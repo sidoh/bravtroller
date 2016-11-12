@@ -36,7 +36,7 @@ module Bravtroller
             raise RuntimeError.new "Found more than one supported Sony device. Please construct Remote manually. Found devices: #{results.inspect}"
           else
             device = results.first
-            @ircc_client = device.service(IRCC_URN, cookies: HTTPI::Cookie.new(authenticator.authorize {}))
+            @ircc_client = device.service(IRCC_URN, cookies: authenticator.authorize({}))
           end
         end
 

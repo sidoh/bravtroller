@@ -14,7 +14,7 @@ Gem::Specification.new do |gem|
   gem.homepage = 'http://github.com/sidoh/bravtroller'
   gem.license = 'MIT'
 
-  gem.add_dependency('easy_upnp', '>= 0.1.8')
+  gem.add_dependency('easy_upnp', '~> 1.1')
 
   gem.add_development_dependency('rake', '~> 10.4')
 
