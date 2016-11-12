@@ -1,5 +1,5 @@
 require 'singleton'
-require 'easy_upnp/ssdp_searcher'
+require 'easy_upnp'
 
 require_relative 'authenticator'
 require_relative 'client'
