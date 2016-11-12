@@ -1,0 +1,108 @@
+#!/usr/bin/ruby
+
+$LOAD_PATH << File.expand_path('../../lib', __FILE__)
+
+require 'optparse'
+require 'json'
+require 'pp'
+
+require 'bravtroller'
+
+options = {}
+
+banner = <<-BANNER
+  By default, chooses an arbitrary Bravia device on the network. Use the --host
+  option to specify a host manually.
+  
+  Usage: bravtroller [OPTIONS]
+BANNER
+
+opts = OptionParser.new do |opts|
+  opts.banner = banner
+  
+  opts.on('-h', '--host [HOST]', "Connects to HOST") do |v|
+    options[:host] = v
+  end
+  
+  opts.on("-a", "--authenticate", "Authenticate with the TV") do
+    options[:authenticate] = true
+  end
+
+  opts.on("--on", "Turn on the TV") do |v|
+    options[:on] = true
+  end
+
+  opts.on("--off", "Turn off the TV") do
+    options[:off] = false
+  end
+  
+  opts.on("-l", "--list", "Prints a list of all button names") do |v|
+    options[:list] = true
+  end
+  
+  opts.on("-b", "--button [BUTTON]", String, "Send command to press BUTTON") do |b|
+    options[:buttons] ||= []
+    options[:buttons].push(b)
+  end
+end
+
+opts.parse!
+
+host = nil
+search_results = nil
+
+if !options[:host].nil?
+  host = options[:host]
+end
+
+def ssdp_search
+  EasyUpnp::SsdpSearcher.new.search(Bravtroller::Remote::IRCC_URN)
+end
+
+if host.nil?
+  puts "Searching for a TV..."
+  
+  search_results = ssdp_search
+  
+  if !search_results.any?
+    warn "Couldn't find a device that looked like a Bravia TV on the network."
+    exit 1
+  end
+  
+  host = search_results.first.host
+  
+  puts "TV found: #{host}"
+end
+
+if options[:authenticate]
+  authenticator = Bravtroller::Authenticator.new(host)
+  
+  begin 
+    authenticator.authorize do
+      puts "You should see a four digit code displayed on the TV. Enter it here: "
+      print "> "
+      gets.chop
+    end
+  rescue Bravtroller::AuthorizationError => e
+    warn "Authorization failed! Make sure you entered the code correctly."
+    exit 1
+  end
+  
+  puts "Authentication successful!"
+end
+
+remote = Bravtroller::Remote.new(host)
+buttons = nil
+
+if options[:list]
+  buttons = remote.buttons
+  puts buttons.sort.join(' ')
+end
+
+if options[:buttons]
+  buttons ||= remote.buttons
+  
+  options[:buttons].each do |btn|
+    remote.press_button(btn)
+  end
+end

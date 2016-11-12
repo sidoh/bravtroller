@@ -26,6 +26,8 @@ Gem::Specification.new do |gem|
   }
 
   gem.files = (all_files_without_ignores + dotfiles).sort
+  gem.bindir        = "bin"
+  gem.executables   = ["bravtroller"]
 
   gem.require_path = "lib" 
 end
